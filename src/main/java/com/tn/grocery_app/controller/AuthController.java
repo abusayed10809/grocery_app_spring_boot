@@ -6,6 +6,10 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.Authentication;
+import com.tn.grocery_app.entity.UserEntity;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("/auth")
@@ -48,5 +52,23 @@ public class AuthController {
     public ResponseEntity<String> resetPassword(@Valid @RequestBody ResetPasswordRequest request) {
         String message = userService.resetPassword(request);
         return ResponseEntity.ok(message);
+    }
+
+    @GetMapping("/me")
+    public ResponseEntity<UserEntity> getCurrentUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication == null || !authentication.isAuthenticated() || Objects.equals(authentication.getPrincipal(), "anonymousUser")) {
+            throw new RuntimeException("User is not authenticated");
+        }
+
+        String phone = authentication.getName();
+        UserEntity user = userService.getUserByPhone(phone);
+
+        if (user == null) {
+            throw new RuntimeException("User not found");
+        }
+
+        return ResponseEntity.ok(user);
     }
 }

@@ -25,6 +25,7 @@ public class UserService {
             throw new RuntimeException("User already exists");
         }
         UserEntity user = new UserEntity();
+        user.setName(request.getName());
         user.setPhone(request.getPhone());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setVerified(false);
@@ -98,5 +99,9 @@ public class UserService {
     private String generateOtp() {
         Random random = new Random();
         return String.format("%06d", random.nextInt(999999));
+    }
+
+    public UserEntity getUserByPhone(String phone) {
+        return userRepository.findByPhone(phone).orElseThrow(() -> new RuntimeException("User not found"));
     }
 }
