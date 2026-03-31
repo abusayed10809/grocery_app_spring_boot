@@ -18,57 +18,57 @@ public class AuthController {
 
     private final UserService userService;
 
-    @PostMapping("/register")
-    public ResponseEntity<String> register(@Valid @RequestBody RegisterRequest request) {
-        String message = userService.register(request);
-        return ResponseEntity.ok(message);
-    }
+//    @PostMapping("/register")
+//    public ResponseEntity<String> register(@Valid @RequestBody RegisterRequest request) {
+//        String message = userService.register(request);
+//        return ResponseEntity.ok(message);
+//    }
+//
+//    @PostMapping("/send-otp-registration")
+//    public ResponseEntity<OtpResponse> sendOtpForRegistration(@RequestParam String phone) {
+//        OtpResponse response = userService.sendOtpForRegistration(phone);
+//        return ResponseEntity.ok(response);
+//    }
+//
+//    @PostMapping("/verify-otp-registration")
+//    public ResponseEntity<String> verifyOtpForRegistration(@Valid @RequestBody OtpRequest request) {
+//        String message = userService.verifyOtpForRegistration(request);
+//        return ResponseEntity.ok(message);
+//    }
+//
+//    @PostMapping("/login")
+//    public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest request) {
+//        AuthResponse response = userService.login(request);
+//        return ResponseEntity.ok(response);
+//    }
+//
+//    @PostMapping("/forget-password")
+//    public ResponseEntity<OtpResponse> forgetPassword(@Valid @RequestBody ForgetPasswordRequest request) {
+//        OtpResponse response = userService.forgetPassword(request);
+//        return ResponseEntity.ok(response);
+//    }
+//
+//    @PostMapping("/reset-password")
+//    public ResponseEntity<String> resetPassword(@Valid @RequestBody ResetPasswordRequest request) {
+//        String message = userService.resetPassword(request);
+//        return ResponseEntity.ok(message);
+//    }
 
-    @PostMapping("/send-otp-registration")
-    public ResponseEntity<OtpResponse> sendOtpForRegistration(@RequestParam String phone) {
-        OtpResponse response = userService.sendOtpForRegistration(phone);
-        return ResponseEntity.ok(response);
-    }
-
-    @PostMapping("/verify-otp-registration")
-    public ResponseEntity<String> verifyOtpForRegistration(@Valid @RequestBody OtpRequest request) {
-        String message = userService.verifyOtpForRegistration(request);
-        return ResponseEntity.ok(message);
-    }
-
-    @PostMapping("/login")
-    public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest request) {
-        AuthResponse response = userService.login(request);
-        return ResponseEntity.ok(response);
-    }
-
-    @PostMapping("/forget-password")
-    public ResponseEntity<OtpResponse> forgetPassword(@Valid @RequestBody ForgetPasswordRequest request) {
-        OtpResponse response = userService.forgetPassword(request);
-        return ResponseEntity.ok(response);
-    }
-
-    @PostMapping("/reset-password")
-    public ResponseEntity<String> resetPassword(@Valid @RequestBody ResetPasswordRequest request) {
-        String message = userService.resetPassword(request);
-        return ResponseEntity.ok(message);
-    }
-
-    @GetMapping("/me")
-    public ResponseEntity<UserEntity> getCurrentUser() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
-        if (authentication == null || !authentication.isAuthenticated() || Objects.equals(authentication.getPrincipal(), "anonymousUser")) {
-            throw new RuntimeException("User is not authenticated");
-        }
-
-        String phone = authentication.getName();
-        UserEntity user = userService.getUserByPhone(phone);
-
-        if (user == null) {
-            throw new RuntimeException("User not found");
-        }
-
-        return ResponseEntity.ok(user);
-    }
+//    @GetMapping("/me")
+//    public ResponseEntity<UserEntity> getCurrentUser() {
+//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+//
+//        if (authentication == null || !authentication.isAuthenticated() || Objects.equals(authentication.getPrincipal(), "anonymousUser")) {
+//            throw new RuntimeException("User is not authenticated");
+//        }
+//
+//        String phone = authentication.getName();
+//        UserEntity user = userService.getUserByPhone(phone);
+//
+//        if (user == null) {
+//            throw new RuntimeException("User not found");
+//        }
+//
+//        return ResponseEntity.ok(user);
+//    }
 }

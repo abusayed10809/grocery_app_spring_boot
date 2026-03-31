@@ -4,25 +4,39 @@ import jakarta.persistence.*;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Entity
+@Table(name = "users")
 @Data
 public class UserEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue
+    private UUID id;
 
     private String name;
 
-    @Column(unique = true, nullable = false)
-    private String phone;
+    @Column(unique = true)
+    private String email;
 
-    @Column(nullable = false)
-    private String password;
+    @Column(name = "hashed_password")
+    private String hashedPassword;
 
-    private boolean isVerified = false;
+    @Column(name = "email_verified")
+    private boolean emailVerified = false;
 
-    private String otp;
+    @Column(name = "is_active")
+    private boolean isActive = false;
 
-    private LocalDateTime otpExpiry;
+    @Column(name = "is_deleted")
+    private boolean isDeleted = false;
+
+    @Column(name = "deleted_at")
+    private LocalDateTime deletedAt;
+
+    @Column(name = "created_at")
+    private LocalDateTime createdAt;
+
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
 }
