@@ -9,11 +9,11 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
-@Table(name = "otp_verifications")
+@Table(name = "sessions")
 @Getter
 @Setter
 @NoArgsConstructor
-public class OtpVerificationEntity {
+public class SessionEntity {
 
     @Id
     @GeneratedValue
@@ -23,23 +23,24 @@ public class OtpVerificationEntity {
     @JoinColumn(name = "user_id")
     private UserEntity user;
 
-    @Column(name = "otp_code", length = 6)
-    private String otpCode;
+    @Column(name = "access_token", columnDefinition = "TEXT")
+    private String accessToken;
 
-    @Enumerated(EnumType.STRING)
-    private OtpType type;
+    @Column(name = "refresh_token", columnDefinition = "TEXT")
+    private String refreshToken;
 
-    @Column(name = "is_used")
-    private boolean isUsed;
+    @Column(name = "device_info")
+    private String deviceInfo;
+
+    @Column(name = "ip_address")
+    private String ipAddress;
+
+    @Column(name = "last_used_at")
+    private LocalDateTime lastUsedAt;
 
     @Column(name = "expires_at")
     private LocalDateTime expiresAt;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
-
-    public enum OtpType {
-        EMAIL_VERIFICATION,
-        FORGOT_PASSWORD
-    }
 }
