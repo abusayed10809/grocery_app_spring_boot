@@ -21,7 +21,7 @@ import java.util.Collections;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     // todo: fetch real user from db instead of just validating the jwt
-    // todo: what is a filter and how does it work
+    // todo: CustomUserDetailsService implementation is needed
     // Utility class for JWT operations (extract + validate)
     private final JwtUtil jwtUtil;
 
@@ -31,38 +31,36 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                     FilterChain filterChain)
             throws ServletException, IOException {
 
-        // Get Authorization header from request
+        // Read Authorization header
         final String authHeader = request.getHeader("Authorization");
         final String jwt;
-        final String phone;
+        final String email;
 
-        // If header is missing or doesn't start with "Bearer ", skip this filter
+        // If no Bearer token, skip filter
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             filterChain.doFilter(request, response);
             return;
         }
 
-        // Extract token (remove "Bearer " prefix)
+        // Extract JWT token
         jwt = authHeader.substring(7);
 
-        // Extract phone (subject) from token
-        phone = jwtUtil.extractPhone(jwt);
+        // Extract email (subject) from token
+        email = jwtUtil.extractEmail(jwt);
 
-        // Proceed only if:
-        // 1. phone exists in token
-        // 2. no authentication is already set in context
-        if (phone != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+        // Proceed only if email exists and user is not already authenticated
+        if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 
-            // Validate token (check phone + expiration)
-            if (jwtUtil.validateToken(jwt, phone)) {
+            // Validate token (email match + expiration check)
+            if (jwtUtil.validateToken(jwt, email)) {
 
-                // Create a minimal UserDetails object (no password, no roles for now)
-                UserDetails userDetails = User.withUsername(phone)
-                        .password("") // password not needed here
-                        .authorities(Collections.emptyList()) // no roles assigned
+                // Create a basic UserDetails object (no DB lookup yet)
+                UserDetails userDetails = User.withUsername(email)
+                        .password("") // not required for JWT auth
+                        .authorities(Collections.emptyList()) // no roles yet
                         .build();
 
-                // Create authentication token
+                // Create authentication object
                 UsernamePasswordAuthenticationToken authToken =
                         new UsernamePasswordAuthenticationToken(
                                 userDetails,
@@ -70,12 +68,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                 userDetails.getAuthorities()
                         );
 
-                // Set authentication in SecurityContext (user is now authenticated)
+                // Store authentication in SecurityContext (user is now "logged in")
                 SecurityContextHolder.getContext().setAuthentication(authToken);
             }
         }
 
-        // Continue filter chain
+        // Continue request flow
         filterChain.doFilter(request, response);
     }
 }

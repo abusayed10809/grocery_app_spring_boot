@@ -16,31 +16,37 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    // todo: add the jwt auth entry point to this
-    // Custom JWT filter that will run before Spring's default auth filter
+    // Custom JWT filter that runs before Spring Security authentication filter
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
+
+    // Handles unauthorized access (returns 401 instead of default Spring response)
+    private final JwtAuthEntryPoint jwtAuthEntryPoint;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                // Disable CSRF (not needed for stateless APIs like JWT)
+                // Disable CSRF since we are using stateless JWT authentication
                 .csrf(AbstractHttpConfigurer::disable)
 
-                // Define authorization rules
+                // Define endpoint access rules
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/**").permitAll() // allow login/register endpoints
+                        .requestMatchers("/auth/**").permitAll() // public endpoints (login/register)
                         .anyRequest().authenticated() // all other endpoints require authentication
                 )
 
-                // Make session stateless (no session stored on server)
+                // Handle authentication errors (invalid/missing token → 401 response)
+                .exceptionHandling(ex ->
+                        ex.authenticationEntryPoint(jwtAuthEntryPoint)
+                )
+
+                // Make session stateless (no server-side session storage)
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
 
-                // Add JWT filter before default username/password authentication filter
+                // Add JWT filter before Spring's default authentication filter
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
-        // Build and return security configuration
         return http.build();
     }
 }
